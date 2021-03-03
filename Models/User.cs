@@ -55,6 +55,7 @@ namespace TestEFC.Models
     {
         public DbSet<User> Users{ get; set; }
         public DbSet<ClientInfo> ClientsInfo { get; set; }
+        public DbSet<Item> Items { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
          
