@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TestEFC.Models;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace TestEFC
 {
@@ -31,6 +31,14 @@ namespace TestEFC
             services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connection));
             services.AddControllersWithViews();
             services.AddMvc();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
+
+            {
+                opt.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Home/Login");
+                opt.LogoutPath = new Microsoft.AspNetCore.Http.PathString("/Home/Logout");
+            }
+         );
+
 
         }
 
