@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TestEFC.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using TestEFC.Services;
 
 namespace TestEFC
 {
@@ -31,6 +32,8 @@ namespace TestEFC
             services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connection));
             services.AddControllersWithViews();
             services.AddMvc();
+            services.AddTransient<EmailService>();
+            services.AddTransient<HashService>();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(opt =>
 
             {
