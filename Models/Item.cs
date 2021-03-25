@@ -10,7 +10,12 @@ namespace TestEFC.Models
 
         [Column(TypeName = "decimal(7, 2)")]
         public decimal Price { get; set; }
+
+        public double Rate { get; set; }
+
+        public string Comments { get; set; }
         public byte[] Img { get; set; }
+        public string Image { get; set; }
         public static long Count { get; set; }
     }
     

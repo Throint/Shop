@@ -14,6 +14,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace TestEFC.Controllers
 {
@@ -22,14 +25,16 @@ namespace TestEFC.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly AppDbContext appDbContext;
         private readonly EmailService emailService;
+        private readonly IWebHostEnvironment hostingEnvironment;
         private readonly HashService hashService;
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext appDb, EmailService emailService, HashService hashService)
+        public HomeController(ILogger<HomeController> logger, AppDbContext appDb, EmailService emailService, HashService hashService, IWebHostEnvironment environment)
         {
             appDbContext = appDb;
             _logger = logger;
             this.emailService = emailService;
             this.hashService = hashService;
+            this.hostingEnvironment = environment; 
         }
         [ValidateAntiForgeryToken]
         //[Authorize(Roles ="Admin")]
@@ -262,6 +267,59 @@ namespace TestEFC.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
 
+        [Authorize]
+        public async Task<IActionResult> CreateItem(CreateItem item)
+        {
+            Item item1 = new Item();
+            item1.Name = item.Name;
+            item1.Price = item.Price;
+            item1.Desription = item.Desription;
+            if (item.FormFile != null)
+            {
+                var uniqueFileName = GetUniqueFileName(item.FormFile.FileName);
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "uploads");
+                var filePath = Path.Combine(uploads, uniqueFileName);
+                item.FormFile.CopyTo(new FileStream(filePath, FileMode.Create));
+                item1.Image = uniqueFileName;
+               await appDbContext.Items.AddAsync(item1);
+                await appDbContext.SaveChangesAsync();
+                //to do : Save uniqueFileName  to your db table   
+            }
+            // to do  : Return something
+           return RedirectToAction("Index", "Home");
+         
+           
+            // item1.Img = item.FormFile;
+          //  var img_tmp = item.FormFile;
+            
+
+            
+        }
+        [HttpGet]
+        public async Task<IActionResult> AllItems()
+        {
+            var lst = appDbContext.Items.ToList();
+            Dictionary<Item, FileStreamResult> keyValuePairs = new Dictionary<Item, FileStreamResult> ();
+          
+            for (int i=0; i<lst.Count;i++)
+            {
+                var uploads = Path.Combine(hostingEnvironment.WebRootPath, "uploads");
+                var filePath = Path.Combine(uploads, lst[i].Image);
+             var file = System.IO.File.OpenRead(filePath);
+                var q_file= File(file, "imge/jpeg");
+                keyValuePairs.Add(lst[i], q_file);
+            }
+            return View(keyValuePairs);
+        }
+
+        private string GetUniqueFileName(string fileName)
+        {
+            fileName = Path.GetFileName(fileName);
+            return Path.GetFileNameWithoutExtension(fileName)
+                      + "_"
+                      + Guid.NewGuid().ToString().Substring(0, 4)
+                      + Path.GetExtension(fileName);
+        }
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
