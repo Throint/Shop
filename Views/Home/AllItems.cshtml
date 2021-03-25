@@ -6,4 +6,76 @@
 @model Dictionary<Item, FileStreamResult>
 @{
 }
+@*<head>
+ <link href="//twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>*@
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<body>
 
+<div>
+    @if( TempData["Name"]!=null)
+    {
+         <p>@TempData["Name"]</p>
+
+    }
+    @if(User.Identity.IsAuthenticated)
+    {
+        <a href="/Logout"> Log out</a>
+        
+    }
+  
+</div>
+
+<div class ="table">
+<div align="center">
+    @if(Model!=null)
+    {
+         <table class="table table-striped">
+              <thead>
+    <tr>
+    
+      <th scope="col">Id</th>
+      <th scope="col">Name</th>
+       <th scope="col">Vote</th>
+        <th scope="col">Result</th>
+  
+    </tr>
+  </thead>
+        
+        @foreach(var i in Model)
+        {
+          
+               <tr>
+                   
+                   <td> @i.Key.Name</td>
+                   <td>@i.Key.Price</td>
+                 
+                      @if(@i.Key.Count==0)
+                      {
+                         <td>
+                         Not available
+                          
+                       </td>   
+                      }
+                      else
+                      {
+                       <td>
+                           @i.Key.Count
+                       </td>
+                            }
+
+                
+               </tr>
+
+           
+                
+        }
+           </table>
+    }
+    </div>
+
+</div>
+</body> 

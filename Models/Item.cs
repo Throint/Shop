@@ -16,7 +16,7 @@ namespace TestEFC.Models
         public string Comments { get; set; }
         public byte[] Img { get; set; }
         public string Image { get; set; }
-        public static long Count { get; set; }
+        public  long Count { get; set; }
     }
     
 }
