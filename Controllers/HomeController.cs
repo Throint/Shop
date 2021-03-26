@@ -48,12 +48,22 @@ namespace TestEFC.Controllers
                 user1.FirstName = user.Name;
                 user1.SecondName = user.SecondName;
                 user1.UserMail = user.Email;
-              var hashed=  HashService.GetHashStr(user.PassFirst, 10000);
+                string salt;
+              var hashed=  HashService.GetHashStr(user.PassFirst,out salt, 10000);
                 user1.Pass = hashed;
+                user1.Salt = salt;
                 user1.EmailWasConfirmed = false;
                user1.Role = "Admin";
                 var token = await emailService.Token(user1);
-               await EmailService.SendEmailAsync(user1.UserMail, "Confirm", token);
+                StringBuilder path = new StringBuilder(Request.Scheme);
+                path.Append("://");
+                path.Append(Request.Host.Value);
+                path.Append("/Home/ConfirmEmail");
+                path.Append("/?token=");
+                StringBuilder stringBuilder = new StringBuilder(token);
+                stringBuilder.Replace("+", "%2B");
+                path.Append(stringBuilder.ToString());
+                await EmailService.SendEmailAsync(user1.UserMail, "Confirm", path.ToString());
               //  user1.Salary = user.SalaryUser;
                 await appDbContext.ClientsInfo.AddAsync(user1);
                 await appDbContext.SaveChangesAsync();
@@ -266,8 +276,13 @@ namespace TestEFC.Controllers
             // set authentication cookies
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
-
-        [Authorize]
+        [HttpGet]
+        public IActionResult CreateItem()
+        {
+            return View();
+        }
+      //  [Authorize]
+      [HttpPost]
         public async Task<IActionResult> CreateItem(CreateItem item)
         {
             Item item1 = new Item();
