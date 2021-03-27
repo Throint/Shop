@@ -279,7 +279,7 @@ namespace TestEFC.Controllers
         [HttpGet]
         public IActionResult CreateItem()
         {
-            return View();
+            return View(new CreateItem());
         }
       //  [Authorize]
       [HttpPost]
@@ -292,10 +292,16 @@ namespace TestEFC.Controllers
             if (item.FormFile != null)
             {
                 var uniqueFileName = GetUniqueFileName(item.FormFile.FileName);
+                
                 var uploads = Path.Combine(hostingEnvironment.WebRootPath, "uploads");
+                if(!Directory.Exists(uploads))
+                {
+                    Directory.CreateDirectory(uploads);
+                }
                 var filePath = Path.Combine(uploads, uniqueFileName);
                 item.FormFile.CopyTo(new FileStream(filePath, FileMode.Create));
                 item1.Image = uniqueFileName;
+                
                await appDbContext.Items.AddAsync(item1);
                 await appDbContext.SaveChangesAsync();
                 //to do : Save uniqueFileName  to your db table   

@@ -5,6 +5,8 @@
 @using TestEFC.ModelView;
 @model Dictionary<Item, FileStreamResult>
 @{
+    string str="/uploads/";
+    string url = string.Empty;
 }
 @*<head>
  <link href="//twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
@@ -39,8 +41,9 @@
     
       <th scope="col">Id</th>
       <th scope="col">Name</th>
-       <th scope="col">Vote</th>
-        <th scope="col">Result</th>
+       <th scope="col">Price</th>
+        <th scope="col">Count</th>
+        <th scope="col">Image</th>
   
     </tr>
   </thead>
@@ -67,6 +70,11 @@
                        </td>
                             }
 
+                        <td>
+                   @*   <img src="upload/@i.Key.Image" />*@
+                    <img class="img" src="/uploads/@Url.Content(i.Key.Image)" />
+                      </td>
+
                 
                </tr>
 
@@ -76,6 +84,10 @@
            </table>
     }
     </div>
-
+       @* <img src="@Url.Content($"/upload/{@Model.First().Key.Image}")"/>*@
+         @* <img src="~/upload/")"/>*@
+       @*   <img src="@Url.Content(Model.Last().Key.Image)" />*@
+       
 </div>
+ <img src="upload/@Model.Last().Key.Image"height="250px" width="500px" />
 </body> 
