@@ -8,6 +8,7 @@ using TestEFC.Services;
 using System.Threading.Tasks;
 using TestEFC.ModelView;
 using TestEFC.Models;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -205,7 +206,7 @@ namespace TestEFC.Controllers
                         await Authenticate(loginUser.Email); // аутентификация
 
                         TempData["Name"] = loginUser.Email;
-                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        if (!string.IsNullOrEmpty(returnUrl) )
                         {
 
                             //    string st = "/";
@@ -304,6 +305,7 @@ namespace TestEFC.Controllers
                 
                await appDbContext.Items.AddAsync(item1);
                 await appDbContext.SaveChangesAsync();
+                
                 //to do : Save uniqueFileName  to your db table   
             }
             // to do  : Return something
@@ -315,6 +317,36 @@ namespace TestEFC.Controllers
             
 
             
+        }
+        [Authorize]
+        public async Task<IActionResult> AddToCart(long ItemId)
+        {
+            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var user = await appDbContext.Users.FirstOrDefaultAsync(i => i.UserMail == userEmail);
+            Cart cart = new Cart();
+           
+            if (user.CartList == null)
+            {
+                cart = new Cart() { CountItems = 0, TotalPrice = 0, Items = string.Empty };
+            }
+            else
+            {
+                cart = JsonSerializer.Deserialize<Cart>(user.CartList);
+            }
+
+            var item = await appDbContext.Items.FirstOrDefaultAsync(i => i.Id == ItemId);
+            if(item!=null)
+            {
+                cart.Items += JsonSerializer.Serialize(item);
+                cart.CountItems++;
+                cart.TotalPrice += item.Price;
+
+                user.CartList = JsonSerializer.Serialize(cart);
+                appDbContext.Users.Update(user);
+
+            }
+            await appDbContext.SaveChangesAsync();
+            return RedirectToAction("AllItems");
         }
         [HttpGet]
         public async Task<IActionResult> AllItems()

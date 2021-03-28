@@ -15,6 +15,7 @@ namespace TestEFC.Models
      //   public decimal Salary { get; set; }
         public string UserMail { get; set; }
 
+        public string CartList { get; set; }
 
 
     }
