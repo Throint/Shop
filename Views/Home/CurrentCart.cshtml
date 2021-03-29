@@ -1,0 +1,82 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using TestEFC.Models;
+@model IEnumerable<Item>
+@{
+}
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+    string str="/uploads/";
+    string url = string.Empty;
+}
+@*<head>
+ <link href="//twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>*@
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<body>
+
+<div>
+    @if( TempData["Name"]!=null)
+    {
+         <p>@TempData["Name"]</p>
+
+    }
+    @if(User.Identity.IsAuthenticated)
+    {
+        <a href="/Logout"> Log out</a>
+        
+    }
+  
+</div>
+
+<div class ="table">
+<div align="center">
+    @if(Model!=null)
+    {
+         <table class="table table-striped">
+              <thead>
+    <tr>
+    
+      <th scope="col">Id</th>
+      <th scope="col">Name</th>
+       <th scope="col">Price</th>
+     
+  
+    </tr>
+  </thead>
+        
+        @foreach(var i in Model)
+        {
+          
+               <tr>
+                   
+                   <td> @i.Id</td>
+                   <td>@i.Name</td>
+                     <td>@i.Price</td>
+                 
+                  
+
+                
+               </tr>
+
+           
+                
+        }
+           </table>
+    }
+    </div>
+       @* <img src="@Url.Content($"/upload/{@Model.First().Key.Image}")"/>*@
+         @* <img src="~/upload/")"/>*@
+       @*   <img src="@Url.Content(Model.Last().Key.Image)" />*@
+       
+</div>
+
+</body> 
+

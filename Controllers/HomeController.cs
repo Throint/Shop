@@ -206,7 +206,7 @@ namespace TestEFC.Controllers
                         await Authenticate(loginUser.Email); // аутентификация
 
                         TempData["Name"] = loginUser.Email;
-                        if (!string.IsNullOrEmpty(returnUrl) )
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) )
                         {
 
                             //    string st = "/";
@@ -301,6 +301,7 @@ namespace TestEFC.Controllers
                 }
                 var filePath = Path.Combine(uploads, uniqueFileName);
                 item.FormFile.CopyTo(new FileStream(filePath, FileMode.Create));
+               
                 item1.Image = uniqueFileName;
                 
                await appDbContext.Items.AddAsync(item1);
@@ -322,31 +323,113 @@ namespace TestEFC.Controllers
         public async Task<IActionResult> AddToCart(long ItemId)
         {
             var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-            var user = await appDbContext.Users.FirstOrDefaultAsync(i => i.UserMail == userEmail);
+            var user = await appDbContext.ClientsInfo.FirstOrDefaultAsync(i => i.UserMail == userEmail);
+            var SelectedItem = await appDbContext.Items.FirstOrDefaultAsync(i => i.Id == ItemId);
             Cart cart = new Cart();
-           
-            if (user.CartList == null)
+            if (user!=null)
             {
-                cart = new Cart() { CountItems = 0, TotalPrice = 0, Items = string.Empty };
+                if(user.CartList!=null)
+                {
+                    cart = JsonSerializer.
+             Deserialize<Cart>(user.CartList);
+                    List<Item> items = JsonSerializer.Deserialize<List<Item>>(cart.Items);
+                    if(SelectedItem!=null)
+                    {
+                        items.Add(SelectedItem);
+                        cart.CountItems++;
+                        cart.TotalPrice += SelectedItem.Price;
+                        cart.Items += JsonSerializer.Serialize(items);
+                        user.CartList = JsonSerializer.Serialize(cart);
+                        appDbContext.ClientsInfo.Update(user);
+                    }
+                }
+                else
+                {
+                   
+            cart=  new Cart()
+              {
+                  CountItems = 0,
+                  TotalPrice = 0,
+                  Items = string.Empty
+              };
+
+                    if (SelectedItem != null)
+                    {
+                        List<Item> items = new List<Item>();
+                        items.Add(SelectedItem);
+                        cart.CountItems++;
+                        cart.TotalPrice += SelectedItem.Price;
+                        cart.Items += JsonSerializer.Serialize(items);
+                        user.CartList = JsonSerializer.Serialize(cart);
+                        appDbContext.ClientsInfo.Update(user);
+                    }
+
+                }
+
+            }
+          
+
+            //if (user.CartList == null)
+            //{
+            //    cart = new Cart() { CountItems = 0, TotalPrice = 0, Items = string.Empty };
+            //}
+            //cart =JsonSerializer.
+            //    Deserialize<Cart>(user.CartList)??
+            //    new Cart() { CountItems = 0, 
+            //        TotalPrice = 0, Items = string.Empty };
+            //else
+            //{
+            //    cart = JsonSerializer.Deserialize<Cart>(user.CartList);
+            //}
+
+            //var item = await appDbContext.Items.FirstOrDefaultAsync(i => i.Id == ItemId);
+            //if(item!=null)
+            //{
+            //    List<Item> items = JsonSerializer.Deserialize<List<Item>>(cart.Items);
+            //    items.Add(item);    
+            //    cart.Items += JsonSerializer.Serialize(items);
+            //    cart.CountItems++;
+            //    cart.TotalPrice += item.Price;
+
+            //    user.CartList = JsonSerializer.Serialize(cart);
+            //    appDbContext.ClientsInfo.Update(user);
+
+            //}
+            await appDbContext.SaveChangesAsync();
+            return RedirectToAction("AllItems");
+        }
+
+        public async Task<IActionResult> CurrentCart()
+        {
+            var currEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var curUser = await appDbContext.ClientsInfo.
+                FirstOrDefaultAsync(i=>i.UserMail==currEmail);
+            if(curUser!=null)
+            {
+                if (curUser.CartList != null)
+                {
+                    var cartListItems = JsonSerializer.Deserialize<Cart>(curUser.CartList);
+                    List<Item> items=
+                        
+                        JsonSerializer.Deserialize<List<Item>>(cartListItems.Items); 
+
+
+                    return View(items);
+                }
+                else return RedirectToAction("EmptyCart");
             }
             else
             {
-                cart = JsonSerializer.Deserialize<Cart>(user.CartList);
+                return RedirectToAction("CurrentUserNotFound");
             }
-
-            var item = await appDbContext.Items.FirstOrDefaultAsync(i => i.Id == ItemId);
-            if(item!=null)
-            {
-                cart.Items += JsonSerializer.Serialize(item);
-                cart.CountItems++;
-                cart.TotalPrice += item.Price;
-
-                user.CartList = JsonSerializer.Serialize(cart);
-                appDbContext.Users.Update(user);
-
-            }
-            await appDbContext.SaveChangesAsync();
-            return RedirectToAction("AllItems");
+        }
+        public IActionResult CurrentUserNotFound()
+        {
+            return View();
+        }
+        public IActionResult EmptyCart()
+        {
+            return View();
         }
         [HttpGet]
         public async Task<IActionResult> AllItems()

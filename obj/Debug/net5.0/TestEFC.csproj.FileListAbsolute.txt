@@ -78,3 +78,6 @@ C:\Users\user\source\repos\TestEFC\TestEFC\bin\Debug\net5.0\MimeKit.dll
 C:\Users\user\source\repos\TestEFC\TestEFC\bin\Debug\net5.0\BouncyCastle.Crypto.dll
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\Login.cshtml.g.cs
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\AllItems.cshtml.g.cs
+C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\CurrentCart.cshtml.g.cs
+C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\CurrentUserNotFound.cshtml.g.cs
+C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\EmptyCart.cshtml.g.cs
