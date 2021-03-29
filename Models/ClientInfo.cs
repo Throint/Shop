@@ -12,7 +12,8 @@
         public bool EmailWasConfirmed { get; set; }
 
         public string Pass { get; set; }
-        public string CartList { get; set; }
+        public string CartListItems { get; set; }
+        public string CartInfo { get; set; }
         public string Salt { get; set; }
 
     }

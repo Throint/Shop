@@ -328,18 +328,24 @@ namespace TestEFC.Controllers
             Cart cart = new Cart();
             if (user!=null)
             {
-                if(user.CartList!=null)
+                if(user.CartListItems!=null)
                 {
-                    cart = JsonSerializer.
-             Deserialize<Cart>(user.CartList);
-                    List<Item> items = JsonSerializer.Deserialize<List<Item>>(cart.Items);
+             //       cart = JsonSerializer.
+             //Deserialize<Cart>(user.CartList);
+                    Dictionary<List<Item>, decimal> items = JsonSerializer.Deserialize<Dictionary<List<Item>, decimal>>
+                        (user.CartListItems);
                     if(SelectedItem!=null)
                     {
-                        items.Add(SelectedItem);
-                        cart.CountItems++;
-                        cart.TotalPrice += SelectedItem.Price;
-                        cart.Items += JsonSerializer.Serialize(items);
-                        user.CartList = JsonSerializer.Serialize(cart);
+                        if(items==null)
+                        {
+                           // items.Add(SelectedItem, SelectedItem.Price );
+                        }
+                     //   items.Add(SelectedItem, );
+                        //cart.CountItems++;
+                        //cart.TotalPrice += SelectedItem.Price;
+                        //cart.Items += JsonSerializer.Serialize(items);
+                        user.CartListItems = JsonSerializer.Serialize(items);
+
                         appDbContext.ClientsInfo.Update(user);
                     }
                 }
@@ -350,7 +356,7 @@ namespace TestEFC.Controllers
               {
                   CountItems = 0,
                   TotalPrice = 0,
-                  Items = string.Empty
+                 // Items = string.Empty
               };
 
                     if (SelectedItem != null)
@@ -359,9 +365,9 @@ namespace TestEFC.Controllers
                         items.Add(SelectedItem);
                         cart.CountItems++;
                         cart.TotalPrice += SelectedItem.Price;
-                        cart.Items += JsonSerializer.Serialize(items);
-                        user.CartList = JsonSerializer.Serialize(cart);
-                        appDbContext.ClientsInfo.Update(user);
+                        //cart.Items += JsonSerializer.Serialize(items);
+                        //user.CartList = JsonSerializer.Serialize(cart);
+                        //appDbContext.ClientsInfo.Update(user);
                     }
 
                 }
@@ -406,15 +412,15 @@ namespace TestEFC.Controllers
                 FirstOrDefaultAsync(i=>i.UserMail==currEmail);
             if(curUser!=null)
             {
-                if (curUser.CartList != null)
+                if (curUser.CartListItems != null)
                 {
-                    var cartListItems = JsonSerializer.Deserialize<Cart>(curUser.CartList);
-                    List<Item> items=
+                    var cartListItems = JsonSerializer.Deserialize<Cart>(curUser.CartListItems);
+                    //List<Item> items=
                         
-                        JsonSerializer.Deserialize<List<Item>>(cartListItems.Items); 
+                    //    JsonSerializer.Deserialize<List<Item>>(cartListItems); 
 
 
-                    return View(items);
+                    return View();
                 }
                 else return RedirectToAction("EmptyCart");
             }

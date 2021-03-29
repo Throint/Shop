@@ -22,7 +22,7 @@ namespace TestEFC.Models
     public class Cart
     {
         public long CountItems { get; set; } = 0;
-        public string Items { get; set; }
+      //  public string Items { get; set; }
         public decimal TotalPrice { get; set; }
 
     }
