@@ -363,11 +363,16 @@ namespace TestEFC.Controllers
                     {
                         List<Item> items = new List<Item>();
                         items.Add(SelectedItem);
-                        cart.CountItems++;
-                        cart.TotalPrice += SelectedItem.Price;
+                        Dictionary<List<Item>, decimal> keyValuePairs = new Dictionary<List<Item>, decimal>();
+                        keyValuePairs.Add(items, items[0].Price);
+                        var JsonList = JsonSerializer.Serialize(keyValuePairs);
+                        user.CartListItems = JsonList;
+
+                    //    cart.CountItems++;
+                      //  cart.TotalPrice += SelectedItem.Price;
                         //cart.Items += JsonSerializer.Serialize(items);
                         //user.CartList = JsonSerializer.Serialize(cart);
-                        //appDbContext.ClientsInfo.Update(user);
+                        appDbContext.ClientsInfo.Update(user);    
                     }
 
                 }
