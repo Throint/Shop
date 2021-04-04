@@ -12,6 +12,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Newtonsoft.Json;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -326,55 +327,83 @@ namespace TestEFC.Controllers
             var user = await appDbContext.ClientsInfo.FirstOrDefaultAsync(i => i.UserMail == userEmail);
             var SelectedItem = await appDbContext.Items.FirstOrDefaultAsync(i => i.Id == ItemId);
             Cart cart = new Cart();
-            if (user!=null)
+            if (SelectedItem != null)
             {
-                if(user.CartListItems!=null)
+                if (user != null)
                 {
-             //       cart = JsonSerializer.
-             //Deserialize<Cart>(user.CartList);
-                    Dictionary<List<Item>, decimal> items = JsonSerializer.Deserialize<Dictionary<List<Item>, decimal>>
-                        (user.CartListItems);
-                    if(SelectedItem!=null)
+                    if (user.CartListItems != null)
                     {
-                        if(items==null)
+
+                        List<(int, Item, decimal)> curCartValue = JsonConvert.DeserializeObject<List<(int, Item, decimal)>>(user.CartListItems);
+                        //   string test = JsonSerializer.Serialize(curCartValue);
+                        //       cart = JsonSerializer.
+                        //Deserialize<Cart>(user.CartList);
+                        int x = curCartValue.Last().Item1 + 1;
+                        decimal price = 0;
+                        for(int i=0; i<curCartValue.Count;i++)
                         {
-                           // items.Add(SelectedItem, SelectedItem.Price );
+                            price += curCartValue[i].Item3;
                         }
-                     //   items.Add(SelectedItem, );
+
+                        price += SelectedItem.Price;
+                        (int, Item, decimal) NewValue = (x, SelectedItem, price);
+                        curCartValue.Add(NewValue);
+                        string AfterSerial = JsonConvert.SerializeObject(curCartValue);
+                        // string result = curCartValue + AfterSerial;
+                        user.CartListItems = AfterSerial;
+                        appDbContext.ClientsInfo.Update(user);
+                      //  Tuple<int, string, decimal> tuple = new Tuple<int, string, decimal>(1, "s", 11);
+                        //Dictionary<List<Item>, decimal> items = JsonSerializer.Deserialize<Dictionary<List<Item>, decimal>>
+                        //    (user.CartListItems);
+
+                        //if (items == null)
+                        //{
+                        //    // items.Add(SelectedItem, SelectedItem.Price );
+                        //}
+                        //   items.Add(SelectedItem, );
                         //cart.CountItems++;
                         //cart.TotalPrice += SelectedItem.Price;
                         //cart.Items += JsonSerializer.Serialize(items);
-                        user.CartListItems = JsonSerializer.Serialize(items);
+                      //  user.CartListItems = JsonSerializer.Serialize(items);
 
                         appDbContext.ClientsInfo.Update(user);
                     }
-                }
-                else
-                {
-                   
-            cart=  new Cart()
-              {
-                  CountItems = 0,
-                  TotalPrice = 0,
-                 // Items = string.Empty
-              };
 
-                    if (SelectedItem != null)
+                    else
                     {
-                        List<Item> items = new List<Item>();
-                        items.Add(SelectedItem);
-                        Dictionary<List<Item>, decimal> keyValuePairs = new Dictionary<List<Item>, decimal>();
-                        keyValuePairs.Add(items, items[0].Price);
-                        var JsonList = JsonSerializer.Serialize(keyValuePairs);
-                        user.CartListItems = JsonList;
+                        int id = 1;
+                        (int, Item, decimal) cartData = new(id, SelectedItem, SelectedItem.Price);
+                        List<(int, Item, decimal)> lst = new List<(int, Item, decimal)>();
+                        lst.Add(cartData);
+                        string JSonCart = JsonConvert.SerializeObject(lst);
 
-                    //    cart.CountItems++;
-                      //  cart.TotalPrice += SelectedItem.Price;
-                        //cart.Items += JsonSerializer.Serialize(items);
-                        //user.CartList = JsonSerializer.Serialize(cart);
-                        appDbContext.ClientsInfo.Update(user);    
+                        user.CartListItems = JSonCart;
+                        appDbContext.ClientsInfo.Update(user);
+
+                        //cart=  new Cart()
+                        //  {
+                        //      CountItems = 0,
+                        //      TotalPrice = 0,
+                        //     // Items = string.Empty
+                        //  };
+
+                        //        if (SelectedItem != null)
+                        //        {
+                        //            List<Item> items = new List<Item>();
+                        //            items.Add(SelectedItem);
+                        //            Dictionary<List<Item>, decimal> keyValuePairs = new Dictionary<List<Item>, decimal>();
+                        //            keyValuePairs.Add(items, items[0].Price);
+                        //            var JsonList = JsonSerializer.Serialize(keyValuePairs);
+                        //            user.CartListItems = JsonList;
+
+                        //        //    cart.CountItems++;
+                        //          //  cart.TotalPrice += SelectedItem.Price;
+                        //            //cart.Items += JsonSerializer.Serialize(items);
+                        //            //user.CartList = JsonSerializer.Serialize(cart);
+                        //            appDbContext.ClientsInfo.Update(user);    
+                        //        }
+
                     }
-
                 }
 
             }
@@ -419,13 +448,14 @@ namespace TestEFC.Controllers
             {
                 if (curUser.CartListItems != null)
                 {
-                    var cartListItems = JsonSerializer.Deserialize<Cart>(curUser.CartListItems);
+                  var cartListItems=  JsonConvert.DeserializeObject<List<(int, Item, decimal)>>(curUser.CartListItems);
+                //    var cartListItems = JsonSerializer.Deserialize<List<(int, Item, decimal)>>(curUser.CartListItems);
                     //List<Item> items=
                         
                     //    JsonSerializer.Deserialize<List<Item>>(cartListItems); 
 
-
-                    return View();
+                    
+                    return View(cartListItems);
                 }
                 else return RedirectToAction("EmptyCart");
             }
@@ -470,7 +500,7 @@ namespace TestEFC.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "User");
+            return RedirectToAction("Login", "Home");
         }
     }
 }
