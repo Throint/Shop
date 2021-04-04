@@ -42,8 +42,9 @@
       <th scope="col">Id</th>
       <th scope="col">Name</th>
        <th scope="col">Price</th>
-        <th scope="col">Count</th>
+       <th scope="col">Count</th>
         <th scope="col">Image</th>
+        <th scope="col">Buy</th>
   
     </tr>
   </thead>
@@ -53,7 +54,8 @@
           
                <tr>
                    
-                   <td> @i.Key.Name</td>
+                   <td> @i.Key.Id</td>
+                   <td>@i.Key.Name</td>
                    <td>@i.Key.Price</td>
                  
                       @if(@i.Key.Count==0)

@@ -10,7 +10,7 @@
     <label asp-for=Name></label>
     <input type="text" asp-for=Name />
     <label asp-for=Price></label>
-    <input type="number" step=".01" max="99999.99" />
+    <input type="number" step=".01" max="99999.99" asp-for="@Model.Price" />
     <label asp-for=Desription></label>
     <input type="text"  asp-for=Desription />
     <label>Upload image</label>
