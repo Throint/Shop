@@ -301,8 +301,10 @@ namespace TestEFC.Controllers
                     Directory.CreateDirectory(uploads);
                 }
                 var filePath = Path.Combine(uploads, uniqueFileName);
-                item.FormFile.CopyTo(new FileStream(filePath, FileMode.Create));
-               
+                FileStream fileStream = new FileStream(filePath, FileMode.Create);
+
+                item.FormFile.CopyTo(fileStream);
+                fileStream.Close();
                 item1.Image = uniqueFileName;
                 
                await appDbContext.Items.AddAsync(item1);
@@ -311,6 +313,7 @@ namespace TestEFC.Controllers
                 //to do : Save uniqueFileName  to your db table   
             }
             // to do  : Return something
+        //    await Task.Delay(10000);
            return RedirectToAction("Index", "Home");
          
            
@@ -477,6 +480,7 @@ namespace TestEFC.Controllers
         [HttpGet]
         public async Task<IActionResult> AllItems()
         {
+          //  await Task.Delay(10000);
             var lst = appDbContext.Items.ToList();
             Dictionary<Item, FileStreamResult> keyValuePairs = new Dictionary<Item, FileStreamResult> ();
           
@@ -484,6 +488,7 @@ namespace TestEFC.Controllers
             {
                 var uploads = Path.Combine(hostingEnvironment.WebRootPath, "uploads");
                 var filePath = Path.Combine(uploads, lst[i].Image);
+            
              var file = System.IO.File.OpenRead(filePath);
                 var q_file= File(file, "imge/jpeg");
                 keyValuePairs.Add(lst[i], q_file);
