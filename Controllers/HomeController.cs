@@ -331,7 +331,7 @@ namespace TestEFC.Controllers
             {
                 if (user != null)
                 {
-                    if (user.CartListItems != null)
+                    if (user.CartListItems != "[]")
                     {
 
                         List<(int, Item, decimal)> curCartValue = JsonConvert.DeserializeObject<List<(int, Item, decimal)>>(user.CartListItems);
@@ -340,11 +340,13 @@ namespace TestEFC.Controllers
                         //Deserialize<Cart>(user.CartList);
                         int x = curCartValue.Last().Item1 + 1;
                         decimal price = 0;
-                        for(int i=0; i<curCartValue.Count;i++)
-                        {
-                            price += curCartValue[i].Item3;
-                        }
+                        //for(int i=0; i<curCartValue.Count;i++)
+                        //{
+                        //    price += curCartValue[i].Item3;
+                        //}
+                        //or change with Dictionary with decimal value
 
+                        price += curCartValue.LastOrDefault().Item3;
                         price += SelectedItem.Price;
                         (int, Item, decimal) NewValue = (x, SelectedItem, price);
                         curCartValue.Add(NewValue);
@@ -502,5 +504,71 @@ namespace TestEFC.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Home");
         }
+        [Authorize]
+        public async Task<IActionResult> RemoveFromCart(int id)
+        {
+            var curUserEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var curUser = await appDbContext.ClientsInfo.
+                FirstOrDefaultAsync(i => i.UserMail == curUserEmail);
+            if(curUser.CartListItems!=null)
+            {
+                List<(int, Item ,decimal)> tempLst= JsonConvert.
+                    DeserializeObject<List<(int, Item, decimal)>>(curUser.CartListItems);
+                tempLst.RemoveAt(id - 1);
+              string result=  JsonConvert.SerializeObject(tempLst);
+                curUser.CartListItems = result;
+                appDbContext.ClientsInfo.Update(curUser);
+                await appDbContext.SaveChangesAsync();
+            }
+            return RedirectToAction("CurrentCart");
+
+        }
+        [Authorize]
+        public IActionResult OrderCreate()
+        {
+            return View();
+
+        }
+        [Authorize]
+        public async Task<IActionResult> OrderConfirm(OrderCreateModel orderCreate)
+        {
+            var curEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+            var curUser = await appDbContext.ClientsInfo.FirstOrDefaultAsync(i => i.UserMail == curEmail);
+            List<(int, Item, decimal)> cart = 
+                JsonConvert.DeserializeObject<List<(int, Item, decimal)>>(curUser.CartListItems);
+            StringBuilder ItemsIDlist = new StringBuilder();
+            for(int i=0; i<cart.Count;i++)
+            {
+            ItemsIDlist.Append(cart[i].Item2.Id.ToString());
+                ItemsIDlist.Append('\t');
+            }
+            string Id_s = ItemsIDlist.ToString();
+            Order order = new Order()
+            {
+                Address = orderCreate.Address,
+                BuyerEmail = orderCreate.Email,
+                BuyerFirstName = orderCreate.FirstName,
+                BuyerSecondName = orderCreate.SecondName,
+                PayType = orderCreate.PaymentType,
+                PhoneNumber = orderCreate.PhoneNubmer,
+                ItemsId = Id_s,
+                TotalPrice = cart.LastOrDefault().Item3,
+                Status=OrderStatus.WaitForConfirm
+
+
+            };
+            cart.Clear();
+            
+
+            string tst = JsonConvert.SerializeObject(cart);
+            curUser.CartListItems = tst;
+            appDbContext.ClientsInfo.Update(curUser);
+         await   appDbContext.Orders.AddAsync(order);
+            await appDbContext.SaveChangesAsync();
+            return RedirectToAction("Index");
+           
+        }
+
+
     }
 }

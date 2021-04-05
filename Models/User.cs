@@ -27,7 +27,7 @@ namespace TestEFC.Models
 
     }
 
-    public enum OrderStatus
+    public enum OrderStatus:int
     {
       WaitForConfirm,
       Confirmed,
@@ -47,6 +47,7 @@ namespace TestEFC.Models
         public DbSet<ClientInfo> ClientsInfo { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ConfirmToken> ConfirmTokens { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> dbContextOptions) : base(dbContextOptions)
         {
          

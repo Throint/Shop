@@ -82,3 +82,4 @@ C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\TestEFC.Views.pdb
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\TestEFC.csproj.CopyComplete
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\TestEFC.genruntimeconfig.cache
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\Logout.cshtml.g.cs
+C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\OrderCreate.cshtml.g.cs

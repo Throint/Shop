@@ -10,7 +10,7 @@
 *@
 
 @{
-    decimal PriceValue = Model.Last().Item3;
+    decimal PriceValue = Model.LastOrDefault().Item3;
 }
 @*<head>
  <link href="//twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
@@ -60,7 +60,7 @@
                    <td> @i.Item1</td>
                    <td>@i.Item2?.Name</td>
                      <td>@i.Item2.Price</td>
-             
+                    <td>@Html.ActionLink("Remove", "RemoveFromCart","Home", new {id=@i.Item1})</td>
                   
 
                 
@@ -77,6 +77,8 @@
 
            </table>
     }
+
+    @Html.ActionLink("Create order", "OrderCreate","Home")
     
     </div>
        @* <img src="@Url.Content($"/upload/{@Model.First().Key.Image}")"/>*@
