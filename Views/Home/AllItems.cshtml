@@ -25,7 +25,8 @@
     }
     @if(User.Identity.IsAuthenticated)
     {
-        <a href="/Logout"> Log out</a>
+     @*   <a href="Home/Logout"> Log out</a>*@
+        @Html.ActionLink("Log out", "Logout", "Home")
         
     }
   

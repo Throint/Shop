@@ -7,7 +7,19 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
-<a href="Home/Login"> Login</a>
-<a href="Home/CreateUser"> Register</a>
+ @if(User.Identity.IsAuthenticated)
+    {
+     @*   <a href="Home/Logout"> Log out</a>*@
+        @Html.ActionLink("Log out", "Logout", "Home")
+        
+    }
+    else
+    {
+        @Html.ActionLink("Log in", "Login", "Home")
+    }
+@*<a href="Home/Login"> Login</a>
+*@<a href="Home/CreateUser"> Register</a>
+<a href="Home/AllItems">All items </a>
+
 <div class ="table">
 
