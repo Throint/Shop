@@ -83,3 +83,4 @@ C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\TestEFC.csproj.CopyC
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\TestEFC.genruntimeconfig.cache
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\Logout.cshtml.g.cs
 C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\OrderCreate.cshtml.g.cs
+C:\Users\user\source\repos\TestEFC\TestEFC\obj\Debug\net5.0\Razor\Views\Home\AccessDenied.cshtml.g.cs

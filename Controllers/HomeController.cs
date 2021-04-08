@@ -279,9 +279,24 @@ namespace TestEFC.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
         [HttpGet]
-        public IActionResult CreateItem()
+        [Authorize]
+        public async Task<IActionResult> CreateItem()
         {
-            return View(new CreateItem());
+            var q = User.FindFirst(ClaimTypes.Email)?.Value;
+            var curUser = await appDbContext.ClientsInfo.FirstOrDefaultAsync(i => i.UserMail == q);
+            if(q!=null)
+            {
+                if(curUser.Role=="Admin")
+                {
+                    return View(new CreateItem());
+                }
+            }
+            return RedirectToAction("AccessDenied");
+        }
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
       //  [Authorize]
       [HttpPost]
